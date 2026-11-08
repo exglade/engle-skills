@@ -1,0 +1,14 @@
+{
+  "name": "engle-skills",
+  "owner": {
+    "name": "Cheng Kai Sheng"
+  },
+  "description": "Engineer-led agentic engineering skills: you decide how far the agent goes.",
+  "plugins": [
+    {
+      "name": "engle",
+      "source": "./",
+      "description": "Engineer-led agentic engineering skills: you decide how far the agent goes."
+    }
+  ]
+}

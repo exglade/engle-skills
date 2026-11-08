@@ -1,0 +1,37 @@
+{
+  "name": "engle",
+  "version": "0.1.0",
+  "description": "Engineer-led agentic engineering skills: you decide how far the agent goes.",
+  "author": {
+    "name": "Cheng Kai Sheng"
+  },
+  "repository": "https://github.com/exglade/engle-skills",
+  "license": "MIT",
+  "skills": [
+    "./skills/ask-engle",
+    "./skills/audit-tooling",
+    "./skills/create-verify-skill",
+    "./skills/diagnose-bug",
+    "./skills/grill-me",
+    "./skills/handoff",
+    "./skills/how",
+    "./skills/huh",
+    "./skills/implement",
+    "./skills/implement-spec",
+    "./skills/improve-code",
+    "./skills/map-code",
+    "./skills/pr",
+    "./skills/principles",
+    "./skills/prototype",
+    "./skills/reflect",
+    "./skills/research",
+    "./skills/review-code",
+    "./skills/setup-engle",
+    "./skills/to-spec",
+    "./skills/to-tickets",
+    "./skills/unslop",
+    "./skills/what",
+    "./skills/why",
+    "./skills/write-for-agents"
+  ]
+}

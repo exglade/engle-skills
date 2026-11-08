@@ -1,0 +1,19 @@
+{
+  "name": "engle",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Engineer-led agentic engineering skills: you decide how far the agent goes.",
+  "author": {
+    "name": "Cheng Kai Sheng"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/exglade/engle-skills"
+  },
+  "license": "MIT",
+  "packageManager": "pnpm@12.14.0",
+  "scripts": {
+    "build:plugin": "node scripts/build-plugin.mjs",
+    "check:plugin": "node scripts/build-plugin.mjs --check"
+  }
+}
