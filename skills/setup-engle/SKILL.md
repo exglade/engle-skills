@@ -18,13 +18,17 @@ Wire the collection into this project. Skills work without it; this makes the on
 
 ## 1. Keep `.scratch/` out of git
 
-1. Run `git check-ignore -q .scratch/`. If it's already ignored, say so and move on.
+1. Run `git check-ignore -v .scratch/`. Read its output, not its exit code: it prints `<file>:<line>:<pattern>`
+   when a rule matches and nothing when none does. If it prints a pattern that doesn't start with `!`, `.scratch/`
+   is already ignored: name that file and line, and move on. A pattern that starts with `!` un-ignores it; name
+   that rule too, since a line added before it won't win.
 2. Ask how to keep `.scratch/` out of git:
    - **Only for me** (default): add `.scratch/` to the file `git rev-parse --git-path info/exclude` prints. The team
      never sees it. In a worktree `.git` is a file, so a literal `.git/info/exclude` breaks.
    - **For everyone:** add `.scratch/` to `.gitignore`. It's a team file, so say so; on a team repo it's their call.
    - **Don't ignore it:** change nothing.
-3. Done when `git check-ignore` matches the user's choice.
+3. Done when `git check-ignore -v .scratch/` prints the line you added, or nothing or a `!` rule for "Don't
+   ignore it".
 
 ## 2. Create the work folder
 
