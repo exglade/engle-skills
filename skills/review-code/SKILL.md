@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Reviews a code diff against its spec, the project's standards, and the risk of breaking things elsewhere, sorting findings by how much they matter, with an opt-in mode where subagents try to break the change. Use to review a branch, a PR, uncommitted changes, or "everything since X", after implementing a ticket or spec, or when the user wants a change stress-tested or reviewed adversarially. Not for improving code that isn't changing; use improve-code.
+description: Reviews a code diff against its spec, the project's standards, and the risk of breaking things elsewhere, ranking findings P0–P3 and recommending which to act on, with an opt-in mode where subagents try to break the change. Use to review a branch, a PR, uncommitted changes, or "everything since X", after implementing a ticket or spec, or when the user wants a change stress-tested or reviewed adversarially. Not for improving code that isn't changing; use improve-code.
 license: MIT
 metadata:
   source: Adapted from mattpocock/skills (code-review), MIT.
@@ -60,34 +60,48 @@ Run this only when the user asks for an adversarial review, to "try to break it"
    requires. Leave out anything you didn't run, including style and risks that need a future change."
 2. Rerun every reported command yourself. Keep a finding only when the output shows the failure and the failure
    breaks the intent. Merge findings with one root cause.
-3. Kept findings go in **Act on** with their command; each one is a ready regression test. List how many were
+3. Kept findings are P0 or P1 and go in **Act on** with their command; each one is a ready regression test. List how many were
    dropped and why.
 4. No findings is a valid result. Say what was tried.
 
 ## 5. Sort the findings
 
 - When a smell and a principle flag the same thing, report it once, under the principle.
-- Tag each finding with its axis, then put it in one bucket:
-  - **Act on:** real problems with correctness, security, or maintainability. Would block a real PR.
-  - **Consider:** legitimate, but fixing now may cost more than it's worth. The user decides.
-  - **Noted:** valid but not actionable now.
-  - **Dismissed:** wrong, nitpicky, or missing context, with the reason, so the user can overrule it.
+- Tag each finding with its axis (where it came from) and a priority (how bad it is). The priority is fixed by the
+  finding alone:
+  - **P0:** breaks production or data, opens a security hole, or the intent's main path fails. Drop other work.
+  - **P1:** wrong behavior on a real path, or a spec requirement missing. Fix before merge.
+  - **P2:** works today but will cost later: a broken principle, an unhandled edge case, hard-to-change code.
+  - **P3:** minor: naming, polish, a small smell. Fix if cheap.
+- List findings by priority, P0 first. Findings that are wrong, nitpicky, or missing context get no priority; list
+  them under **Dismissed** with the reason, so the user can overrule it.
+- Then recommend what to do, in buckets. Unlike the priority, this depends on the situation: the user's urgency,
+  the ticket's scope, and what each fix costs.
+  - **Act on:** fix now. Default: P0 and P1.
+  - **Consider:** worth fixing, but it may cost more than it's worth now. The user decides. Default: P2.
+  - **Noted:** valid but not worth acting on now. Default: P3.
+  - Move a finding off its default when the situation says so, and give the reason: under a deadline, a P1 outside
+    the ticket's scope may drop to Consider; with time to spare, a cheap P2 may rise to Act on. P0 stays in Act on.
 - Summarize each axis separately, so a clean Standards result can't hide a Spec failure.
-- Done when every finding is bucketed and the report below is delivered.
+- Done when every finding has a priority or is dismissed, every prioritized finding is in a bucket, and the report
+  below is delivered.
 
 ## Report
 
 ```text
 Intent: <one paragraph>
 
-Act on
-- [Spec] <finding>: <why it matters>
-Consider
-- [Standards] <finding>: <trade-off>
-Noted
-- ...
+Findings
+1. P0 [Risk] <finding>: <why it matters>
+2. P1 [Spec] <finding>: <why it matters>
+3. P2 [Standards] <finding>: <trade-off>
 Dismissed
-- ...: <reason>
+- [Standards] <finding>: <reason>
+
+Recommendation
+- Act on: 1, 2
+- Consider: 3, <reason if off its default>
+- Noted: ...
 
 Safe because: <the one fact>, proven by <command/output> | unproven
 Outside this diff: <one line each, suggest `improve-code`>
