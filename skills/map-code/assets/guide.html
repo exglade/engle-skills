@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map: [repo, or repo/path]</title>
+<style>
+  :root {
+    --bg: #fbfaf7; --panel: #ffffff; --text: #1f2328; --muted: #5d6670; --line: #e3e0d8;
+    --accent: #2f6fdf; --accent-soft: #e8f0fd; --code-bg: #f3f1ec;
+    --doc: #1a7f4b; --doc-soft: #e3f4ea; --inf: #9a6700; --inf-soft: #fbf0d6;
+    --l1: #e8f0fd; --l2: #e9f6ef; --l3: #fbf0d6; --l4: #f6e8f4; --l5: #eceae4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171a; --panel: #1d2024; --text: #e6e8eb; --muted: #9aa3ad; --line: #30353b;
+      --accent: #7aa7ff; --accent-soft: #1f2b40; --code-bg: #24282d;
+      --doc: #5cd18e; --doc-soft: #183326; --inf: #e3b341; --inf-soft: #352b12;
+      --l1: #1f2b40; --l2: #183326; --l3: #352b12; --l4: #33213a; --l5: #2a2d31;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; font-size: 13px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  a { color: var(--accent); }
+  .page { display: grid; grid-template-columns: 220px minmax(0, 1fr); max-width: 1200px; margin: 0 auto; }
+  nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 28px 16px; border-right: 1px solid var(--line); }
+  nav a { display: block; padding: 4px 10px; border-radius: 6px; color: var(--muted); text-decoration: none; font-size: 14px; }
+  nav a:hover, nav a.active { background: var(--accent-soft); color: var(--accent); }
+  main { padding: 28px 40px 80px; min-width: 0; }
+  header h1 { margin: 0 0 4px; font-size: 28px; }
+  .meta { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px; }
+  section h2 { margin: 0 0 12px; font-size: 20px; }
+  h3 { font-size: 16px; margin: 18px 0 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }
+  .doc { color: var(--doc); background: var(--doc-soft); }
+  .inf { color: var(--inf); background: var(--inf-soft); }
+  /* Layers: a stack of bands, top = closest to the user */
+  .stack { display: flex; flex-direction: column; gap: 6px; }
+  .layer { display: grid; grid-template-columns: 180px 1fr; gap: 12px; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--line); }
+  .layer:nth-child(1) { background: var(--l1); } .layer:nth-child(2) { background: var(--l2); }
+  .layer:nth-child(3) { background: var(--l3); } .layer:nth-child(4) { background: var(--l4); }
+  .layer:nth-child(n+5) { background: var(--l5); }
+  .layer .name { font-weight: 600; }
+  .layer .tech span { display: inline-block; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 0 7px; margin: 2px 4px 2px 0; font-size: 13px; }
+  .layer .note { color: var(--muted); font-size: 13px; }
+  /* Folder tree */
+  .tree details { margin-left: 18px; } .tree > details { margin-left: 0; }
+  .tree summary { cursor: pointer; padding: 3px 0; }
+  .tree summary code { font-weight: 600; }
+  .tree .why { color: var(--muted); font-size: 14px; margin: 2px 0 6px 18px; }
+  .tree .leaf { margin-left: 18px; padding: 3px 0; }
+  .principle { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 8px 8px 0; margin-bottom: 14px; }
+  .mermaid { background: var(--panel); text-align: center; white-space: pre; }
+  ul { padding-left: 20px; } li { margin: 4px 0; }
+  @media (max-width: 800px) {
+    .page { grid-template-columns: 1fr; }
+    nav { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--line); padding: 12px 16px; }
+    nav a { display: inline-block; }
+    main { padding: 20px 16px 60px; }
+    .layer { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<nav>
+  <a href="#glance">At a glance</a>
+  <a href="#stack">Stack</a>
+  <a href="#architecture">Architecture</a>
+  <a href="#flow">Main flow</a>
+  <a href="#folders">Folder structure</a>
+  <a href="#terms">Key terms</a>
+  <a href="#conventions">Conventions</a>
+  <a href="#start">Getting started</a>
+  <a href="#contribute">How to contribute</a>
+  <a href="#gotchas">Gotchas</a>
+  <a href="#next">Where to go next</a>
+  <a href="#open">Open questions</a>
+</nav>
+<main>
+<header>
+  <h1>Map: [repo, or repo/path]</h1>
+  <div class="meta">Generated [date]. Scope: [whole repo, or path]. Read only; commands not run.
+    <span class="badge doc">documented</span> = the project says so.
+    <span class="badge inf">inferred</span> = read from the code.</div>
+</header>
+
+<section id="glance">
+  <h2>At a glance</h2>
+  <p>[What it is, who uses it, and the problem it solves. Three lines.]</p>
+</section>
+
+<section id="stack">
+  <h2>Stack</h2>
+  <p>[One line: how the layers are split, and which way calls go.]</p>
+  <div class="stack">
+    <div class="layer">
+      <div class="name">[Layer, closest to the user]</div>
+      <div>
+        <div class="tech"><span>[Tech]</span><span>[Tech]</span></div>
+        <div class="note">[What it does] · <code>[path]</code> · calls [layer below]</div>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="name">[Next layer down]</div>
+      <div>
+        <div class="tech"><span>[Tech]</span></div>
+        <div class="note">[What it does] · <code>[path]</code></div>
+      </div>
+    </div>
+  </div>
+  <h3>Tooling</h3>
+  <table>
+    <tr><th>Area</th><th>Choice</th><th>Used for</th></tr>
+    <tr><td>[Build, test, lint, CI]</td><td>[Tool]</td><td>[Purpose] · <code>[config file]</code></td></tr>
+  </table>
+</section>
+
+<section id="architecture">
+  <h2>Architecture</h2>
+  <pre class="mermaid">
+flowchart LR
+  user[User] --> web[Web app]
+  web --> api[API]
+  api --> db[(Database)]
+  </pre>
+  <ul>
+    <li><strong>[Part]:</strong> [what it does, one line]. <code>[path]</code></li>
+  </ul>
+</section>
+
+<section id="flow">
+  <h2>Main flow</h2>
+  <p>[One key request or job, start to end.]</p>
+  <pre class="mermaid">
+sequenceDiagram
+  User->>Web: [action]
+  Web->>API: [call]
+  API-->>Web: [result]
+  </pre>
+</section>
+
+<section id="folders">
+  <h2>Folder structure</h2>
+  <div class="principle"><strong>Organized by [feature / layer / package / framework convention].</strong>
+    [Why, in one or two lines.] <span class="badge doc">documented</span> <code>[source]</code></div>
+  <div class="tree">
+    <details open>
+      <summary><code>[folder]/</code> — [role]</summary>
+      <div class="why">[Why it's here, or the rule it follows.] <span class="badge inf">inferred</span></div>
+      <details>
+        <summary><code>[subfolder]/</code> — [role]</summary>
+        <div class="why">[Why.]</div>
+      </details>
+      <div class="leaf"><code>[file]</code> — [role]</div>
+    </details>
+  </div>
+  <h3>Where new code goes</h3>
+  <table>
+    <tr><th>Adding</th><th>Put it in</th><th>Example</th></tr>
+    <tr><td>[A new endpoint, page, model…]</td><td><code>[path]</code></td><td><code>[existing file]</code></td></tr>
+  </table>
+</section>
+
+<section id="terms">
+  <h2>Key terms</h2>
+  <ul><li><strong>[Term]:</strong> [meaning in this project].</li></ul>
+</section>
+
+<section id="conventions">
+  <h2>Principles and conventions</h2>
+  <ul><li><strong>[Convention]:</strong> [how code is written here]. Example: <code>[file:line]</code></li></ul>
+</section>
+
+<section id="start">
+  <h2>Getting started</h2>
+  <table>
+    <tr><th>Step</th><th>Command</th><th>Source</th></tr>
+    <tr><td>Install</td><td><code>[cmd]</code></td><td>[from the docs / from the scripts]</td></tr>
+    <tr><td>Run</td><td><code>[cmd]</code></td><td></td></tr>
+    <tr><td>Test</td><td><code>[cmd]</code></td><td></td></tr>
+  </table>
+  <p>Prerequisites: [runtime versions, services, env vars].</p>
+</section>
+
+<section id="contribute">
+  <h2>How to contribute</h2>
+  <ul>
+    <li><strong>Branches:</strong> [naming, base branch]</li>
+    <li><strong>Commits:</strong> [style]</li>
+    <li><strong>Pull requests:</strong> [template, review rules]</li>
+    <li><strong>CI checks:</strong> [what runs, what must pass]</li>
+    <li><strong>Owners:</strong> [from CODEOWNERS, or "not found"]</li>
+  </ul>
+</section>
+
+<section id="gotchas">
+  <h2>Gotchas</h2>
+  <ul><li>[Surprising thing that bites newcomers.]</li></ul>
+</section>
+
+<section id="next">
+  <h2>Where to go next</h2>
+  <ul>
+    <li><code>/how [area or flow]</code>: [why it's worth reading next]</li>
+    <li><code>/why [decision]</code>: [why it matters]</li>
+    <li><code>/what [concept]</code>: [a concept the repo leans on]</li>
+  </ul>
+</section>
+
+<section id="open">
+  <h2>Open questions</h2>
+  <ul><li>[What couldn't be confirmed from the repo.]</li></ul>
+</section>
+</main>
+</div>
+<script type="module">
+  // Diagrams need the network once; offline, the diagram source stays readable as text.
+  try {
+    const { default: mermaid } = await import("https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs");
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "neutral" });
+    await mermaid.run();
+  } catch (e) { console.warn("Mermaid not loaded; showing diagram source.", e); }
+  // Highlight the section in view.
+  const links = [...document.querySelectorAll("nav a")];
+  const spy = new IntersectionObserver((entries) => {
+    for (const en of entries) if (en.isIntersecting)
+      links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id));
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll("section").forEach((s) => spy.observe(s));
+</script>
+</body>
+</html>

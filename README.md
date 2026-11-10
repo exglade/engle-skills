@@ -83,7 +83,7 @@ See [Other recommended skills](#other-recommended-skills) for skills from other 
 | Start      | `setup-engle` ⚑         | Wire these skills into a project                       |
 | Start      | `ask-engle` ⚑           | Suggest the next skill or step                         |
 | Project    | `audit-tooling` ⚑       | Find missing or weak tooling, and suggest fixes        |
-| Understand | `map-code` ⚑            | A guide to a repo or one part of it, with diagrams     |
+| Understand | `map-code` ⚑            | An HTML guide to a repo or part of it, with diagrams   |
 | Understand | `how`                   | How one area or flow of the code works                 |
 | Understand | `why`                   | Why the code is built the way it is                    |
 | Understand | `what`                  | What a concept is, with its trade-offs                 |
