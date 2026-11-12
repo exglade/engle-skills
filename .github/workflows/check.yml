@@ -12,9 +12,10 @@ jobs:
   plugin:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      # Installs the pnpm version from package.json's packageManager, plus Node.
+      - uses: pnpm/setup@v3
         with:
-          node-version: 22
+          runtime: node@26
       # Fails when .claude-plugin/ is out of date; fix with `pnpm build:plugin`.
-      - run: node scripts/build-plugin.mjs --check
+      - run: pnpm check:plugin
