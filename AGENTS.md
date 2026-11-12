@@ -14,8 +14,17 @@ A collection of portable agent skills.
 - Stay portable: no assumptions about tracker, stack, or agent.
 - Update the README tables and the `ask-engle` tables when adding, renaming, or removing a skill, then run
   `pnpm build:plugin`.
-- Never edit `.claude-plugin/*.json` by hand. Change `package.json` and run `pnpm build:plugin`.
-- Bump `version` in `package.json` for each release. Plugin users only get updates when it changes.
+- Never edit `.claude-plugin/*.json` by hand. Change `package.json` (except `version`) and run `pnpm build:plugin`.
+
+## Commits and releases
+
+release-please sets the version and writes `CHANGELOG.md` from commit messages, so leave `version` alone and write
+each message as a public changelog line.
+
+- Use Conventional Commits, scoped to the skill: `feat(map-code): write an interactive HTML guide`.
+- Pick the type by what changes for users, not which file changed. A `SKILL.md` edit that changes behavior is
+  `feat` or `fix`, not `docs`.
+- Add `!` only when users must act, such as a renamed or removed skill. A new skill is `feat`.
 
 ## Duplicated instructions
 
