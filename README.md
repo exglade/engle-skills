@@ -32,7 +32,21 @@ It's the set I use on my own projects and at work.
 /plugin install engle@engle-skills
 ```
 
-Update with `/plugin marketplace update engle-skills`.
+Auto-update is off by default for third-party marketplaces. To turn it on, find the `engle-skills` entry under
+`extraKnownMarketplaces` in `~/.claude/settings.json` and add `"autoUpdate": true`:
+
+```json
+"extraKnownMarketplaces": {
+  "engle-skills": {
+    "source": { ... },
+    "autoUpdate": true
+  }
+}
+```
+
+Claude Code then updates the marketplace and the plugin in the background, and the next session loads the new
+version. See
+[When auto-update runs](https://code.claude.com/docs/en/plugins/loading#when-auto-update-runs).
 
 Plugin skills are namespaced, so `/to-spec` becomes `/engle:to-spec`.
 </details>
